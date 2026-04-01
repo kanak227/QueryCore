@@ -1,0 +1,11 @@
+Machine learning is a core component of Artificial Intelligence that focuses on building systems that can learn from data. Instead of being explicitly programmed, these systems improve their performance over time through experience.
+
+There are different types of machine learning, including supervised learning, unsupervised learning, and reinforcement learning. In supervised learning, models are trained using labeled data, while unsupervised learning finds patterns in unlabeled data.
+
+Common algorithms in machine learning include linear regression, decision trees, and neural networks. These algorithms are used in applications such as image recognition, spam detection, and recommendation systems.
+
+Data plays a crucial role in machine learning. High-quality data leads to better model performance, while poor data can result in inaccurate predictions.
+
+Machine learning is widely used in industries such as healthcare, finance, marketing, and cybersecurity. It helps organizations make data-driven decisions and automate complex tasks.
+
+With the rapid growth of data, machine learning continues to be one of the most important and in-demand fields in technology.
