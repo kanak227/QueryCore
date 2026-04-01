@@ -30,6 +30,6 @@ def load_index():
     with open(INDEX_PATH, "rb") as f:
         data = pickle.load(f)
 
-    print("⚡ Index loaded from disk!")
+    print("Index loaded from disk!")
 
     return data["index"], data["doc_lengths"], data["idf"]
