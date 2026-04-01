@@ -4,54 +4,46 @@ from utils.stopwords import STOPWORDS
 
 
 def clean_text(text: str) -> str:
-    """
-    Lowercase and remove punctuation
-    """
     text = text.lower()
     text = re.sub(r'[^a-z0-9\s]', '', text)
     return text
 
 
 def tokenize(text: str) -> list:
-    """
-    Split text into words
-    """
-    tokens = text.split()
-    return tokens
+    return text.split()
 
 
 def remove_stopwords(tokens: list) -> list:
-    """
-    Remove common stopwords
-    """
-    filtered = [word for word in tokens if word not in STOPWORDS]
-    return filtered
+    return [word for word in tokens if word not in STOPWORDS]
 
 
-def parse_document(filepath: str) -> list:
+def parse_document(filepath: str) -> dict:
     """
-    Full pipeline for a single file
+    Returns:
+    {
+      "tokens": [...],
+      "text": "original text"
+    }
     """
     with open(filepath, 'r', encoding='utf-8') as f:
-        text = f.read()
+        raw_text = f.read()
 
-    text = clean_text(text)
-    tokens = tokenize(text)
+    cleaned = clean_text(raw_text)
+    tokens = tokenize(cleaned)
     tokens = remove_stopwords(tokens)
 
-    return tokens
+    return {
+        "tokens": tokens,
+        "text": raw_text
+    }
 
 
 def parse_all_documents(folder_path: str) -> dict:
-    """
-    Parse all .txt files in a folder
-    """
     documents = {}
 
     for filename in os.listdir(folder_path):
         if filename.endswith(".txt"):
             filepath = os.path.join(folder_path, filename)
-            tokens = parse_document(filepath)
-            documents[filename] = tokens
+            documents[filename] = parse_document(filepath)
 
     return documents

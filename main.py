@@ -1,50 +1,46 @@
 from src.parser import parse_all_documents
 from src.indexer import build_inverted_index
-from src.search import search
+from src.search import search, process_query
 from src.ranker import compute_idf
+from src.snippet import generate_snippet
 
 DATA_PATH = "data"
 
 
 def main():
-    # Step 1: Parse all documents
     docs = parse_all_documents(DATA_PATH)
 
-    # Step 2: Build inverted index + doc lengths
     index, doc_lengths = build_inverted_index(docs)
 
-    # Step 3: Compute IDF
     total_docs = len(docs)
     idf = compute_idf(index, total_docs)
 
-    # Debug prints (optional)
-    print("\n📏 Document Lengths:")
-    for doc, length in doc_lengths.items():
-        print(f"{doc} → {length}")
-
-    print("\n📊 IDF Sample:")
-    for word in list(idf.keys())[:5]:
-        print(f"{word} → {idf[word]:.3f}")
-
-    # Step 4: Search loop
     while True:
-        query = input("\n🔍 Enter query (or 'exit'): ")
+        query = input("\n Enter query (or 'exit'): ")
 
         if query.lower() == "exit":
             print("Exiting QueryCore...")
             break
 
-        results = search(index, doc_lengths, idf, query)
+        mode_input = input("Choose mode (AND/OR): ").strip().upper()
+        mode = "AND" if mode_input == "AND" else "OR"
 
-        # Sort results by score (descending)
+        results = search(index, doc_lengths, idf, query, mode)
+
         sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
 
-        print("\n📊 Results:")
+        query_tokens = process_query(query)
+
+        print("\n Results:")
         if not sorted_results:
             print("No results found.")
         else:
             for doc, score in sorted_results:
-                print(f"{doc} → score: {score}")
+                text = docs[doc]["text"]
+                snippet = generate_snippet(text, query_tokens)
+
+                print(f"\n {doc} → score: {score:.3f}")
+                print(snippet)
 
 
 if __name__ == "__main__":

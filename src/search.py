@@ -8,31 +8,43 @@ def process_query(query: str) -> list:
     return tokens
 
 
-def search(index: dict, doc_lengths: dict, idf: dict, query: str) -> dict:
+def search(index: dict, doc_lengths: dict, idf: dict, query: str, mode="OR") -> dict:
     """
-    TF-IDF based search
-    Returns: doc → score
+    mode = "OR" or "AND"
     """
     query_tokens = process_query(query)
-    results = {}
+
+    if not query_tokens:
+        return {}
+
+    # Step 1: collect doc sets
+    doc_sets = []
 
     for word in query_tokens:
-        if word not in index:
-            continue
+        if word in index:
+            doc_sets.append(set(index[word].keys()))
+        else:
+            doc_sets.append(set())
 
-        for doc, freq in index[word].items():
-            # TF = freq / doc_length
-            tf = freq / doc_lengths[doc]
+    # Step 2: combine sets
+    if mode == "AND":
+        common_docs = set.intersection(*doc_sets) if doc_sets else set()
+    else:  # OR
+        common_docs = set.union(*doc_sets) if doc_sets else set()
 
-            # IDF
-            idf_score = idf.get(word, 0)
+    # Step 3: scoring (TF-IDF)
+    results = {}
 
-            # TF-IDF
-            score = tf * idf_score
+    for doc in common_docs:
+        score = 0
 
-            if doc not in results:
-                results[doc] = 0
+        for word in query_tokens:
+            if word in index and doc in index[word]:
+                freq = index[word][doc]
+                tf = freq / doc_lengths[doc]
+                idf_score = idf.get(word, 0)
+                score += tf * idf_score
 
-            results[doc] += score
+        results[doc] = score
 
     return results
